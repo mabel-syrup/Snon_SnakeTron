@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Snon(snakeTron).iml" filepath="$PROJECT_DIR$/Snon(snakeTron).iml" />
+      <module fileurl="file://$PROJECT_DIR$/Snon_SnakeTron.iml" filepath="$PROJECT_DIR$/Snon_SnakeTron.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
