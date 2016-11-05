@@ -13,7 +13,7 @@ import java.util.Stack;
 
 public class Snakebuilder extends View implements SquareView {
 
-   private static String TAG = "SNAKE";
+   private static String TAG = "SNAKEi";
 
     private int maxX;
     private int maxY;
