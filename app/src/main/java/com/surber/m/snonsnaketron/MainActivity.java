@@ -2,19 +2,28 @@ package com.surber.m.snonsnaketron;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
 
-   FrameLayout mFrame;
-   private static Map mMap;
+    FrameLayout mFrame;
+    TextView mGameOver;
+
+    View.OnClickListener restartListener;
+
+    private static String TAG = "SNAKE_ACTIVITY";
+
+    private static Map mMap;
+
 
     private float maxX;
     private float maxY;
 
-    private int centerX;
-    private int centerY;
+    private int squaresmaxX;
+    private int squaremaxY;
 
 
     @Override
@@ -22,9 +31,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         mFrame = (FrameLayout) findViewById(R.id.activity_main);
 
-        mMap= new Map(this,centerX,centerY);
         mFrame.addView(mMap);
 
     }
@@ -35,8 +44,8 @@ public class MainActivity extends AppCompatActivity {
         maxX=mFrame.getWidth();
         maxY= mFrame.getHeight();
         //makes the canvas smaller than its natual window
-        centerX=(int)maxX/2;
-        centerY= (int)maxY/2;
+        squaresmaxX=(int)maxX/2;
+        squaremaxY= (int)maxY/2;
     }
 
 

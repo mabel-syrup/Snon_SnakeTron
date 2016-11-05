@@ -5,7 +5,8 @@ package com.surber.m.snonsnaketron;
  */
 
 public interface SquareView {
-    int getSquareCenterX();
-    int getSquareCenterY();
+    int getSquareMaxX();
+    int getSquareMaxY();
+    int getSize();
 
 }
