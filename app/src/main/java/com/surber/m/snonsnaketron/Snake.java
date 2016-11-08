@@ -11,5 +11,6 @@ public class Snake {
 
     int MaxX;
     int MaxY;
+    int Size;
 
 }

@@ -13,41 +13,52 @@ import android.view.View;
 public class Map extends View implements SquareView {
 
     private Paint mBackgroundPaint;
+    private Paint mGridPaint;
     private Paint mBorderPaint;
 
     public int getMaxX(){return maxX;}
     public int getMaxY(){return maxY;}
+    public int getSize(){return size;}
 
-    private int maxX,maxY;
+    private int maxX,maxY,size;
 
-    public Map (Context context,int x,int y){
+    public Map (Context context,int x,int y, int s){
         super(context);
         mBackgroundPaint = new Paint();
-        mBackgroundPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        mBackgroundPaint.setARGB(70,0,0,0);
+        mBackgroundPaint.setStyle(Paint.Style.FILL);
+        mBackgroundPaint.setARGB(100,248,249,249);
 
-        mBorderPaint= new Paint();
+        mGridPaint= new Paint();
+        mGridPaint.setStyle(Paint.Style.STROKE);
+        mGridPaint.setColor(Color.RED);
+        mGridPaint.setStrokeWidth(5);
+
+        mBorderPaint = new Paint();
         mBorderPaint.setStyle(Paint.Style.STROKE);
-        mBorderPaint.setColor(Color.RED);
-        mBorderPaint.setStrokeWidth(10);
+        mBorderPaint.setColor(Color.WHITE);
+        mGridPaint.setStrokeWidth(10);
 
         this.maxX = x;
         this.maxY = y;
+        this.size=s;
 
     }
 
     public void onDraw(Canvas canvas){
-        canvas.drawCircle(5f,5f,5f,mBorderPaint);
 
-       canvas.drawRect(1f,1f,1f,1f,mBackgroundPaint);
-       canvas.drawRect(maxY,maxX,maxY,maxX,mBorderPaint);
+        canvas.drawRect(maxX,maxY,maxX,maxY,mBackgroundPaint);
+        canvas.drawLine (0,0,0,maxY,mBorderPaint);
+        canvas.drawLine(0,0,maxX,0,mBorderPaint);
+        canvas.drawLine(0,maxY,0,maxY,mBorderPaint);
+        canvas.drawLine(maxX,maxY,maxX,maxY,mBorderPaint);
+
 
         //builds a grid for testing
-        for (int y = 0; y <= maxY; y += 5){
-            canvas.drawLine(0f,y,maxY,y,mBorderPaint);
+       for (int y = 0; y <= maxY; y += size){
+            canvas.drawLine(0f,y,maxX,y,mBorderPaint);
         }
-        for (int x = 0; x <= maxX; x += 5){
-            canvas.drawLine(x,0f,maxX,x,mBorderPaint);
+        for (int x = 0; x <= maxX; x += size){
+            canvas.drawLine(x,0,x,maxY,mGridPaint);
         }
     }
     @Override
@@ -59,7 +70,7 @@ public class Map extends View implements SquareView {
       return getMaxY();
     }
     @Override
-    public int getSize(){
+    public int getSquareSize(){
         return getSize();
     }
 }

@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class Apple extends View implements SquareView {
 
-    private int size = 10;
+    private int size;
 
     public boolean eaten =false;
 
@@ -33,7 +33,7 @@ public class Apple extends View implements SquareView {
 
         mPaint=new Paint();
         mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setColor(Color.RED);
+        mPaint.setColor(Color.GREEN);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class Apple extends View implements SquareView {
     public  int getSquareMaxY(){
         return y;}
     @Override
-    public int getSize(){
+    public int getSquareSize(){
         return size;}
 
 

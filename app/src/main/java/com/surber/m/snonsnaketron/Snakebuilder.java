@@ -18,6 +18,7 @@ public class Snakebuilder extends View implements SquareView {
     private int maxX;
     private int maxY;
 
+
     private float x,y;
     private final Paint mPaint = new Paint();
     protected int mSize = 20;
@@ -33,9 +34,10 @@ public class Snakebuilder extends View implements SquareView {
     }
 
     @Override
-    public int getSize() {
+    public int getSquareSize() {
         return 0;
     }
+
     public Snakebuilder(Context context,int maxX,int maxY){
         super(context);
 

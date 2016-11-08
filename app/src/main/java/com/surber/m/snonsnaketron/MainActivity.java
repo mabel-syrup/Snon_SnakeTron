@@ -25,6 +25,9 @@ public class MainActivity extends AppCompatActivity  {
     private int squaresmaxX;
     private int squaremaxY;
 
+    private int size = 60;
+
+    public int mapsquares[][];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +37,6 @@ public class MainActivity extends AppCompatActivity  {
 
         mFrame = (FrameLayout) findViewById(R.id.activity_main);
 
-        mFrame.addView(mMap);
 
     }
 //does it automatically
@@ -44,10 +46,15 @@ public class MainActivity extends AppCompatActivity  {
         maxX=mFrame.getWidth();
         maxY= mFrame.getHeight();
         //makes the canvas smaller than its natual window
-        squaresmaxX=(int)maxX/2;
-        squaremaxY= (int)maxY/2;
-    }
+        squaresmaxX=(int)maxX;
+        squaremaxY= (int)maxY;
 
+        mMap= new Map(this,squaresmaxX,squaremaxY,size);
+        mFrame.addView(mMap);
+
+        mapsquares= new int[squaresmaxX][squaremaxY];
+
+    }
 
 
 
