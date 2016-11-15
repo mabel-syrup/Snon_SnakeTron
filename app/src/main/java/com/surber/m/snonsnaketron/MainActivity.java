@@ -14,6 +14,8 @@ public class MainActivity extends AppCompatActivity  {
 
     View.OnClickListener restartListener;
 
+    private boolean running = true;
+
     private static String TAG = "SNAKE_ACTIVITY";
 
     private static Map mMap;
@@ -37,23 +39,28 @@ public class MainActivity extends AppCompatActivity  {
 
         mFrame = (FrameLayout) findViewById(R.id.activity_main);
 
-
     }
 //does it automatically
     @Override
-    public void onWindowFocusChanged(boolean hasFoucus){
+    public void onWindowFocusChanged(boolean hasFocus){
         //gets the screen size
         maxX=mFrame.getWidth();
         maxY= mFrame.getHeight();
         //makes the canvas smaller than its natual window
-        squaresmaxX=(int)maxX;
-        squaremaxY= (int)maxY;
+        squaresmaxX=(int)maxX / 60;
+        squaremaxY= (int)maxY / 60;
 
-        mMap= new Map(this,squaresmaxX,squaremaxY,size);
+
+        Grid g = Grid.getInstance();
+        g.size = size;
+        g.resources = getResources();
+        g.APPLE_SPRITE = g.sprite(R.drawable.apple_128);
+        g.tilesX = squaresmaxX;
+        g.tilesY = squaremaxY;
+        g.mapgrid = new int[squaresmaxX][squaremaxY];
+
+        mMap= new Map(this,(int)maxX,(int)maxY,size);
         mFrame.addView(mMap);
-
-        mapsquares= new int[squaresmaxX][squaremaxY];
-
     }
 
 

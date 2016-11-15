@@ -11,7 +11,7 @@ import java.util.Stack;
  * Created by wo1624bu on 11/1/16.
  */
 
-public class Snakebuilder extends View implements SquareView {
+/*public class Snakebuilder extends View implements SquareView {
 
    private static String TAG = "SNAKEi";
 
@@ -86,4 +86,4 @@ public class Snakebuilder extends View implements SquareView {
             this.size= size;
         }
     }
-}
+}*/
