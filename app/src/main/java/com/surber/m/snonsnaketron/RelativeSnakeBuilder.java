@@ -14,7 +14,7 @@ public class RelativeSnakeBuilder extends View implements SquareView  {
 
     private static String TAG = "SNAKEr";
     public RelativeSnake snake;
-
+    public TylerDurden tdSnake;
     int maxX;
     int maxY;
 
@@ -45,10 +45,10 @@ public class RelativeSnakeBuilder extends View implements SquareView  {
         ArrayList<Point> outPoints = new ArrayList<>();
 
         //Get actual head origin.
-        Point origin = snake.getCoords();
+        Point origin = tdSnake.getCoords();
         outPoints.add(origin);
         //Loop through each byte in the segments array.
-        for (Byte segment : snake.getSegments()) {
+        for (Byte segment : tdSnake.getSegments()) {
             //Convert the segment byte to a direction.
             Point delta = byteToDelta(segment);
             //Offset the coordinate fo the previous segment by the direction.

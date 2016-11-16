@@ -2,6 +2,7 @@ package com.surber.m.snonsnaketron;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -21,8 +22,8 @@ public class MainActivity extends AppCompatActivity  {
     private static Map mMap;
 
 
-    private float maxX;
-    private float maxY;
+    private float maxpixelsX;
+    private float maxpixelsY;
 
     private int squaresmaxX;
     private int squaremaxY;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity  {
     private int size = 60;
 
     public int mapsquares[][];
+    View.OnTouchListener mTouchListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,16 +41,30 @@ public class MainActivity extends AppCompatActivity  {
 
         mFrame = (FrameLayout) findViewById(R.id.activity_main);
 
+       //still need a workable snake
+        mTouchListener = new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent){
+                switch (motionEvent.getActionMasked()){
+                    case MotionEvent.ACTION_MOVE:{
+                        int touchX= (int) motionEvent.getX();
+                        int touchY= (int) motionEvent.getY();
+
+                    }
+                }
+                return true;
+            }
+        };
+
     }
-//does it automatically
-    @Override
+
     public void onWindowFocusChanged(boolean hasFocus){
         //gets the screen size
-        maxX=mFrame.getWidth();
-        maxY= mFrame.getHeight();
+        maxpixelsX=mFrame.getWidth();
+        maxpixelsY= mFrame.getHeight();
         //makes the canvas smaller than its natual window
-        squaresmaxX=(int)maxX / 60;
-        squaremaxY= (int)maxY / 60;
+        squaresmaxX=(int)maxpixelsX / size;
+        squaremaxY= (int)maxpixelsY / size;
 
 
         Grid g = Grid.getInstance();
@@ -59,7 +75,8 @@ public class MainActivity extends AppCompatActivity  {
         g.tilesY = squaremaxY;
         g.mapgrid = new int[squaresmaxX][squaremaxY];
 
-        mMap= new Map(this,(int)maxX,(int)maxY,size);
+
+        mMap= new Map(this,(int)maxpixelsX,(int)maxpixelsY,size);
         mFrame.addView(mMap);
     }
 

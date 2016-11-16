@@ -105,8 +105,7 @@ public class Map extends View implements SquareView {
         //revert to base canvas state.  (Clears all entities from the background so we can re-render them)
         canvas.restore();
         //TODO cycle through snakes and render them
-
-        for(int x = 0; x < g.tilesX; x++) {
+    for(int x = 0; x < g.tilesX; x++) {
             for (int y = 0; y < g.tilesY; y++) {
                 if(g.mapgrid[x][y] == g.APPLE_ID) canvas.drawBitmap(g.APPLE_SPRITE,x * size, y * size, null);
             }
