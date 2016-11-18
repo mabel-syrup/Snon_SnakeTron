@@ -7,10 +7,8 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,6 +27,7 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
     private Paint mGridPaint;
     private Paint mBorderPaint;
     private Paint mSnakeSegmentPaint;
+    private Paint mSnakeDotPaint;
 
     private Grid g = Grid.getInstance();
 
@@ -49,17 +48,24 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
 
     private ArrayList<RelativeSnake> snakes = new ArrayList<>();
 
-    //private ArrayList<Apple> apples = new ArrayList<>();
+    long lastTimeMillis;
 
     public Map (Context context,int x,int y, int s){
         super(context);
 
         //This will be replaced
         RelativeSnake rS = new RelativeSnake();
-        rS.head = new Point((int)(g.tilesX / 2),(int)(g.tilesY / 2));
         snakes.add(rS);
         rS.reset(new Point((int)(g.tilesX / 2),(int)(g.tilesY / 2)));
+        rS.queuedDirection = "Up";
+        rS.color = Color.BLUE;
+        RelativeSnake rSB = new RelativeSnake();
+        snakes.add(rSB);
+        rSB.reset(new Point(5,5));
+        rSB.queuedDirection = "Down";
+        rSB.color = Color.RED;
 
+        lastTimeMillis = System.currentTimeMillis();
         gameLoopTimer.schedule(gameLoop,0,17);
         gameLoop.run();
         holder.addCallback(this);
@@ -88,6 +94,11 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
         mSnakeSegmentPaint.setColor(Color.BLACK);
         mSnakeSegmentPaint.setStrokeWidth(10);
 
+        mSnakeDotPaint = new Paint();
+        mSnakeDotPaint.setStyle(Paint.Style.FILL);
+        mSnakeDotPaint.setColor(Color.BLACK);
+        mSnakeDotPaint.setStrokeWidth(10);
+
         this.maxX = x;
         this.maxY = y;
         this.size=s;
@@ -96,8 +107,6 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
     //TODO use firebase to get all current snakes
 
     public void render(){
-
-        //System.out.println("Rendering");
 
         Canvas canvas = holder.lockCanvas();
 
@@ -132,21 +141,57 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
         for(RelativeSnake rS : snakes) {
             int sX = rS.head.x;
             int sY = rS.head.y;
-            canvas.drawRect(sX * size,sY * size,(sX + 1) * size, (sY + 1) * size, mBorderPaint);
+            mSnakeDotPaint.setColor(rS.color);
+            canvas.drawRect(sX * size + 10,sY * size + 10,(sX + 1) * size - 10, (sY + 1) * size - 10, mSnakeDotPaint);
+            ArrayList<Point> segmentTiles = RelativeSnakeBuilder.getSegmentCoords(rS);
+            for(Point p : segmentTiles){
+                canvas.drawRect(p.x * size + 20,p.y * size + 20,(p.x + 1) * size - 20, (p.y + 1) * size - 20, mSnakeDotPaint);
+            }
         }
 
         holder.unlockCanvasAndPost(canvas);
-
-        //System.out.println("Rendered.");
 
     }
 
     //This is called in the game loop as well.
     //This handles all the calculations that happen each frame.
-    public void update (double elapsed) {
+    public void update (long elapsed) {
         appleCount = 0;
         appleTiles.clear();
         snakeTiles.clear();
+
+
+
+        //Checking movements before committing.
+        //This is how we see if they died, grew, or moved.
+        for(RelativeSnake rS : snakes){
+            rS.timeHolder += elapsed;
+            if(rS.timeHolder < rS.speed) {
+                //System.out.println(rS.timeHolder + " is less than " + rS.speed);
+                continue;
+            }
+            rS.timeHolder = 0;
+            //The "AI" snake uses this to not kill itself right away.  Not going to be kept.
+            Point check = rS.checkMovement(rS.queuedDirection);
+            while(check.x >= g.tilesX || check.y >= g.tilesY || check.x <= 0 || check.y <= 0) {
+                check = rS.checkMovement(rS.queuedDirection = getRandDirection(rS.queuedDirection));
+                //rS.reset(new Point(9,11));  //This is where deaths will be called.
+            }
+            if(check.x >= g.tilesX || check.y >= g.tilesY || check.x <= 0 || check.y <= 0){
+                rS.reset(new Point(9,11));  //Death!  (Replace with death method)
+            }
+            else if(g.mapgrid[check.x][check.y] == g.APPLE_ID) {
+                rS.extend(rS.queuedDirection);  //Ate and apple.  Grow.
+                rS.speed -= 10;  //Speed boost!
+                g.mapgrid[check.x][check.y] = 0;  //Apple's gone now.
+            }
+            else if(g.mapgrid[check.x][check.y] == g.SNAKE_ID) {
+                rS.reset(new Point(9,11));  //Death!  (Replace with death method)
+            }
+            else{
+                rS.update(rS.queuedDirection);  //All clear.  Move as normal.
+            }
+        }
 
         for(int x = 0; x < g.tilesX; x++) {
             for (int y = 0; y < g.tilesY; y++) {
@@ -158,21 +203,6 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
                 if(g.mapgrid[x][y] == g.SNAKE_ID) g.mapgrid[x][y] = 0;
             }
         }
-
-        for(RelativeSnake rS : snakes) {
-            ArrayList<Point> segmentTiles = RelativeSnakeBuilder.getSegmentCoords(rS);
-            for(Point p:segmentTiles) {
-                try {
-                    System.out.println("Segment: " + p.toString());
-                    snakeTiles.add(p);
-                    g.mapgrid[p.x][p.y] = g.SNAKE_ID;
-                } catch (ArrayIndexOutOfBoundsException oob) {
-                    continue;
-                }
-            }
-        }
-
-
 
         while(appleCount < idealAppleCount) {
             int ax = rnd.nextInt(g.tilesX - 1);
@@ -192,27 +222,32 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
             }
         }
 
-        //Debugging code to make apples "decay" over time so I can see their spawn behavior.
-        if(rnd.nextInt(25) == 1) {
-            Point p = appleTiles.get(rnd.nextInt(appleTiles.size()));
-            g.mapgrid[p.x][p.y] = 0;
-            for(RelativeSnake rS : snakes) {
-                if(rnd.nextBoolean()) {
-                    rS.update(getRandDirection());
+        for(RelativeSnake rS : snakes) {
+            ArrayList<Point> segmentTiles = RelativeSnakeBuilder.getSegmentCoords(rS);
+            for(Point p:segmentTiles) {
+                try {
+                    //System.out.println("Segment: " + p.toString());
+                    snakeTiles.add(p);
+                    g.mapgrid[p.x][p.y] = g.SNAKE_ID;
+                } catch (ArrayIndexOutOfBoundsException oob) {
+                    continue;
                 }
-                else {
-                    //rS.update(getRandDirection());
-                    rS.extend(getRandDirection());
-                }
-                if(rS.head.x >= g.tilesX || rS.head.y >= g.tilesY || rS.head.x <= 0 || rS.head.y <= 0) rS.reset(new Point(9,11));
-                //if(rnd.nextBoolean()) rS.extend((byte)rnd.nextInt(4));
-                //else rS.update((byte)rnd.nextInt(4));
             }
         }
 
 
 
-        //This is probably where we'd keep track of the client's movements too.
+        //Debugging code to make apples "decay" over time so I can see their spawn behavior.
+        if(rnd.nextInt(25) == 1) {
+            /*Point p = appleTiles.get(rnd.nextInt(appleTiles.size()));
+            g.mapgrid[p.x][p.y] = 0;*/
+            for(RelativeSnake rS : snakes) {
+                rS.queuedDirection = getRandDirection(rS.queuedDirection);
+            }
+        }
+
+        if(elapsed == 0) elapsed = 1;
+        System.out.println("FPS: " + (1000 / elapsed));
     }
 
     private String getRandDirection () {
@@ -229,6 +264,33 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
             default:
                 return "Left";
         }
+    }
+
+    private String getRandDirection(String current){
+        String inverse;
+        switch (current){
+            case "Up":
+                inverse = "Down";
+                break;
+            case "Down":
+                inverse = "Up";
+                break;
+            case "Left":
+                inverse = "Right";
+                break;
+            case "Right":
+                inverse = "Left";
+                break;
+            default:
+                inverse = "NA";
+        }
+        String rand = getRandDirection();
+        while(rand.equals(inverse)){
+            //System.out.println(rand + " was " + inverse);
+            rand = getRandDirection();
+        }
+        //System.out.println(rand + " was NOT " + inverse);
+        return rand;
     }
 
     @Override
@@ -250,7 +312,9 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
 
         @Override
         public void run() {
-            update(0);
+            long elapsed = System.currentTimeMillis() - lastTimeMillis;
+            lastTimeMillis = System.currentTimeMillis();
+            update(elapsed);
             render();
         }
     }
