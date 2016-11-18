@@ -14,7 +14,7 @@ import java.util.Queue;
 
 public class RelativeSnakeBuilder  {
 
-    //public TylerDurden tdSnake;
+
 
     public RelativeSnakeBuilder(Context context, int maxX, int maxY){
 
