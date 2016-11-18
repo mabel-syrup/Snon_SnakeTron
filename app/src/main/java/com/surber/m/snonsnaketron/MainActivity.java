@@ -51,6 +51,9 @@ public class MainActivity extends AppCompatActivity  {
                         int touchY= (int) motionEvent.getY();
 
                     }
+                    case MotionEvent.ACTION_DOWN:{
+                        mFrame.invalidate();
+                    }
                 }
                 return true;
             }
@@ -78,6 +81,7 @@ public class MainActivity extends AppCompatActivity  {
 
         mMap= new Map(this,(int)maxpixelsX,(int)maxpixelsY,size);
         mFrame.addView(mMap);
+        //mMap.gameLoop();
     }
 
 

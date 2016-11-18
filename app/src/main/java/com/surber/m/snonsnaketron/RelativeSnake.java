@@ -2,6 +2,8 @@ package com.surber.m.snonsnaketron;
 
 import android.graphics.Point;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 /**
@@ -11,49 +13,59 @@ import java.util.Stack;
 public class RelativeSnake {
 
     Point head;
-    Stack<Byte> segments;
+    Queue<String> segments = new LinkedList<>();
 
     public Point getCoords(){
         return head;
     }
 
-    public Stack<Byte> getSegments () {
+    public Queue<String> getSegments () {
         return segments;
     }
 
-    public void extend(Byte extension) {
+    public void reset(Point resetLoc) {
+        head = resetLoc;
+        segments.clear();
+        extend("Left");
+        extend("Left");
+    }
+
+    public void extend(String extension) {
         head = move(head,extension);
         segments.add(extension);
+        System.out.println("Extended to " + head.toString() + ".  Length " + segments.size());
     }
 
-    public void update(Byte direction) {
+    public void update(String direction) {
         head = move(head,direction);
-        segments.push(direction);
+        segments.add(direction);
+        segments.remove();
+        System.out.println("Moved to " + head.toString() + ".  Length " + segments.size());
     }
 
-    private Point move (Point point, Byte direction) {
+    private Point move (Point point, String direction) {
         int dX;
         int dY;
         switch (direction) {
             //Left
-            case 0:
-                dX = -1;
-                dY = 0;
-                break;
-            //Up
-            case 1:
-                dX = 0;
-                dY = -1;
-                break;
-            //Right
-            case 2:
+            case "Left":
                 dX = 1;
                 dY = 0;
                 break;
-            //Down
-            case 3:
+            //Up
+            case "Up":
                 dX = 0;
                 dY = 1;
+                break;
+            //Right
+            case "Right":
+                dX = -1;
+                dY = 0;
+                break;
+            //Down
+            case "Down":
+                dX = 0;
+                dY = -1;
                 break;
             default:
                 dX = 0;

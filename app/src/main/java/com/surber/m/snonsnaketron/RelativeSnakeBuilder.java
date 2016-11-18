@@ -5,83 +5,82 @@ import android.graphics.Point;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Created by wo1624bu on 11/15/16.
  */
 
-public class RelativeSnakeBuilder extends View implements SquareView  {
+public class RelativeSnakeBuilder  {
 
-    private static String TAG = "SNAKEr";
-    public RelativeSnake snake;
-    public TylerDurden tdSnake;
-    int maxX;
-    int maxY;
+    //public TylerDurden tdSnake;
 
     public RelativeSnakeBuilder(Context context, int maxX, int maxY){
-        super(context);
-
-        this.maxX=maxX;
-        this.maxY=maxY;
 
     }
 
-    @Override
-    public int getSquareMaxX() {
-        return 0;
-    }
-
-    @Override
-    public int getSquareMaxY() {
-        return 0;
-    }
-
-    @Override
-    public int getSquareSize() {
-        return 0;
-    }
-
-    public ArrayList<Point> getSegmentCoords () {
+    public static ArrayList<Point> getSegmentCoords (RelativeSnake snake) {
         ArrayList<Point> outPoints = new ArrayList<>();
 
         //Get actual head origin.
-        Point origin = tdSnake.getCoords();
-        outPoints.add(origin);
+        Point temp = new Point(snake.getCoords().x, snake.getCoords().y);
+        outPoints.add(new Point(temp.x, temp.y));
+
+        Queue<String> segQ = reverseQueue(snake.getSegments());
+
         //Loop through each byte in the segments array.
-        for (Byte segment : tdSnake.getSegments()) {
+        for (String segment : segQ) {
             //Convert the segment byte to a direction.
-            Point delta = byteToDelta(segment);
+            Point delta = stringToDelta(segment);
             //Offset the coordinate fo the previous segment by the direction.
-            origin.offset(delta.x,delta.y);
+            temp = new Point(temp.x - delta.x,temp.y - delta.y);
             //Place into the Array.
-            outPoints.add(origin);
+            outPoints.add(new Point(temp.x, temp.y));
         }
         return outPoints;
     }
 
-    public Point byteToDelta (Byte direction) {
+    private static Queue<String> reverseQueue (Queue<String> queue) {
+        ArrayList<String> arrayList = new ArrayList<>();
+        for(String s : queue) {
+            arrayList.add(s);
+        }
+        for(int i = 0; i < arrayList.size() / 2; i++) {
+            String temp = arrayList.get(i);
+            arrayList.set(i,arrayList.get(arrayList.size() - i - 1));
+            arrayList.set(arrayList.size() - i - 1,temp);
+        }
+        Queue<String> outQ = new LinkedList<>();
+        for(String s: arrayList) {
+            outQ.add(s);
+        }
+        return outQ;
+    }
+
+    public static Point stringToDelta (String direction) {
         int x;
         int y;
         switch (direction) {
             //Left
-            case 0:
-                x = -1;
-                y = 0;
-                break;
-            //Up
-            case 1:
-                x = 0;
-                y = -1;
-                break;
-            //Right
-            case 2:
+            case "Left":
                 x = 1;
                 y = 0;
                 break;
-            //Down
-            case 3:
+            //Up
+            case "Up":
                 x = 0;
                 y = 1;
+                break;
+            //Right
+            case "Right":
+                x = -1;
+                y = 0;
+                break;
+            //Down
+            case "Down":
+                x = 0;
+                y = -1;
                 break;
             default:
                 x = 0;
