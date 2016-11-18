@@ -12,7 +12,7 @@ public class Grid {
     public Resources resources;
 
     public final int APPLE_ID = 1;
-    public  final int SNAKE_ID= 2;
+
 
     public Bitmap APPLE_SPRITE;
 

@@ -79,6 +79,8 @@ public class MainActivity extends AppCompatActivity  {
         g.mapgrid = new int[squaresmaxX][squaremaxY];
 
 
+
+
         mMap= new Map(this,(int)maxpixelsX,(int)maxpixelsY,size);
         mFrame.addView(mMap);
         //mMap.gameLoop();
