@@ -174,7 +174,7 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
             rS.timeHolder = 0;
             //The "AI" snake uses this to not kill itself right away.  Not going to be kept.
             Point check = rS.checkMovement(rS.queuedDirection);
-            if(check.x >= g.tilesX || check.y >= g.tilesY || check.x <= 0 || check.y <= 0){
+            if(check.x >= g.tilesX || check.y >= g.tilesY || check.x < 0 || check.y < 0){
                 rS.reset(new Point(9,11));  //Death!  (Replace with death method)
             }
             else if(g.mapgrid[check.x][check.y] == g.APPLE_ID) {

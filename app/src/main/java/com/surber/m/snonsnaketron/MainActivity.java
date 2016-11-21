@@ -65,23 +65,20 @@ public class MainActivity extends AppCompatActivity  {
                 if(mMap == null) break;  //No map yet, so tapping a direction can't do anything anyway.
                 System.out.println("mMap Y: " + mFrameLoc[1]);
                 System.out.println("X: " + Math.abs(event.getX() - (maxpixelsX / 2)) * (aspect) + ", Y: " + Math.abs((event.getY() - mFrameLoc[1]) - (maxpixelsY / 2)));
-                if((Math.abs(event.getX() - (maxpixelsX / 2)) * (aspect)) > Math.abs((event.getY() - mFrameLoc[1]) - (maxpixelsY / 2))) {
-                    //We're further to a side than up or down, so we'll call it a side input.
+
+                //We can't go backwards, and forwards is a redundant movement.
+                if(!localDirIsLeftRight(mMap.localDirection)) {
                     if(event.getX() - (maxpixelsX / 2) < 0) {
-                        System.out.println("Left?");
                         mMap.localDirection = "Right";
                     }
                     else if(event.getX() - (maxpixelsX / 2) > 0) {
-                        System.out.println("Right?");
                         mMap.localDirection = "Left";
                     }
                 } else {
                     if((event.getY() - mFrameLoc[1]) - (maxpixelsY / 2) < 0) {
-                        System.out.println("Up?");
                         mMap.localDirection = "Down";
                     }
                     else if((event.getY() - mFrameLoc[1]) - (maxpixelsY / 2) > 0) {
-                        System.out.println("Down?");
                         mMap.localDirection = "Up";
                     }
                 }
@@ -97,6 +94,14 @@ public class MainActivity extends AppCompatActivity  {
                 return super.onTouchEvent(event);
         }
         return false;
+    }
+
+    private boolean localDirIsLeftRight(String direction){
+        return (direction.equals("Left") || direction.equals("Right"));
+    }
+
+    private boolean eventXisGreater(MotionEvent event, int offset){
+        return (Math.abs(event.getX() - (maxpixelsX / 2)) * (aspect)) > Math.abs((event.getY() - offset) - (maxpixelsY / 2));
     }
 
     public void onWindowFocusChanged(boolean hasFocus){
