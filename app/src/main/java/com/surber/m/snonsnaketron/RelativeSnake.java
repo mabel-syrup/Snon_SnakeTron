@@ -19,6 +19,7 @@ public class RelativeSnake {
     long speed = 100;
     long timeHolder = 0;
     int color = Color.BLACK;
+    boolean isAI = true;
 
     public Point getCoords(){
         return head;

@@ -31,10 +31,6 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
 
     private Grid g = Grid.getInstance();
 
-    public int getMaxX(){return maxX;}
-    public int getMaxY(){return maxY;}
-    public int getSize(){return size;}
-
     private int maxX,maxY,size;
 
     int appleCount = 0;
@@ -43,7 +39,7 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
                                                     //These will be used to check for collisions.
 
     int idealAppleCount = 5;
-    int couter = 0;
+    int counter = 0;
 
     Random rnd =  new Random();
 
@@ -51,12 +47,15 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
 
     long lastTimeMillis;
 
+    public String localDirection = "Stationary";
+
     public Map (Context context,int x,int y, int s){
         super(context);
 
         //This will be replaced
         RelativeSnake rS = new RelativeSnake();
         snakes.add(rS);
+        rS.isAI = false;
         rS.reset(new Point((int)(g.tilesX / 2),(int)(g.tilesY / 2)));
         rS.queuedDirection = "Up";
         rS.color = Color.BLUE;
@@ -166,6 +165,7 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
         //Checking movements before committing.
         //This is how we see if they died, grew, or moved.
         for(RelativeSnake rS : snakes){
+            if(!rS.isAI) rS.queuedDirection = localDirection;
             rS.timeHolder += elapsed;
             if(rS.timeHolder < rS.speed) {
                 //System.out.println(rS.timeHolder + " is less than " + rS.speed);
@@ -174,10 +174,6 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
             rS.timeHolder = 0;
             //The "AI" snake uses this to not kill itself right away.  Not going to be kept.
             Point check = rS.checkMovement(rS.queuedDirection);
-            while(check.x >= g.tilesX || check.y >= g.tilesY || check.x <= 0 || check.y <= 0) {
-                check = rS.checkMovement(rS.queuedDirection = getRandDirection(rS.queuedDirection));
-                //rS.reset(new Point(9,11));  //This is where deaths will be called.
-            }
             if(check.x >= g.tilesX || check.y >= g.tilesY || check.x <= 0 || check.y <= 0){
                 rS.reset(new Point(9,11));  //Death!  (Replace with death method)
             }
@@ -189,9 +185,14 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
             else if(g.mapgrid[check.x][check.y] == g.SNAKE_ID) {
                 rS.reset(new Point(9,11));  //Death!  (Replace with death method)
             }
-            else{
-                rS.update(rS.queuedDirection);  //All clear.  Move as normal.
+            if(rS.isAI) {
+                while (check.x >= g.tilesX || check.y >= g.tilesY || check.x <= 0 || check.y <= 0) {
+                    check = rS.checkMovement(rS.queuedDirection = getRandDirection(rS.queuedDirection));
+                    //rS.reset(new Point(9,11));  //This is where deaths will be called.
+                }
             }
+            rS.update(rS.queuedDirection);  //All clear.  Move as normal.
+
         }
 
         for(int x = 0; x < g.tilesX; x++) {
@@ -220,9 +221,9 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
                 g.mapgrid[ax][ay] = g.APPLE_ID;
                 appleTiles.add(new Point(ax,ay));
                 appleCount++;
-                couter++;
+                counter++;
                 //reducing the number of apples
-                if(couter == 2 || couter == 4 || couter == 8){
+                if(counter == 2 || counter == 4 || counter == 8){
                     idealAppleCount--;
                 }
             }
@@ -253,7 +254,7 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
         }
 
         if(elapsed == 0) elapsed = 1;
-        System.out.println("FPS: " + (1000 / elapsed));
+        //System.out.println("FPS: " + (1000 / elapsed));
     }
 
     private String getRandDirection () {
