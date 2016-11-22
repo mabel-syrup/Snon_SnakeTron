@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity  {
         g.tilesX = squaresmaxX;
         g.tilesY = squaremaxY;
         g.mapgrid = new int[squaresmaxX][squaremaxY];
-
+    
 
 
 

@@ -8,6 +8,8 @@ import android.graphics.Point;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.google.firebase.database.DatabaseReference;
+
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
@@ -22,6 +24,9 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
     public SurfaceHolder holder = getHolder();
     public Timer gameLoopTimer = new Timer();
     public GameLoop gameLoop = new GameLoop();
+
+    private DatabaseReference db;
+
 
     private Paint mBackgroundPaint;
     private Paint mGridPaint;
@@ -56,7 +61,6 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
         RelativeSnake rS = new RelativeSnake();
         snakes.add(rS);
         rS.isAI = false;
-        rS.isThisMe = true;
         rS.reset(new Point((int)(g.tilesX / 2),(int)(g.tilesY / 2)));
         rS.queuedDirection = "Up";
         rS.color = Color.BLUE;
