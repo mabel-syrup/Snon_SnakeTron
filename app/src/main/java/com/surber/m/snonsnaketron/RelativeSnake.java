@@ -2,6 +2,8 @@ package com.surber.m.snonsnaketron;
 
 import android.graphics.Color;
 import android.graphics.Point;
+import android.view.MotionEvent;
+import android.view.View;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -20,6 +22,7 @@ public class RelativeSnake {
     long timeHolder = 0;
     int color = Color.BLACK;
     boolean isAI = true;
+    boolean isThisMe = false;
 
     public Point getCoords(){
         return head;
@@ -51,6 +54,7 @@ public class RelativeSnake {
 
     //Provides a fake movement to see what the tile contains.
     public Point checkMovement(String direction) {
+
         Point testMovement = new Point(head.x,head.y);
         return move(testMovement,direction);
     }

@@ -38,7 +38,7 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
     ArrayList<Point> snakeTiles = new ArrayList<>();//List of tiles occupied by snakes currently.
                                                     //These will be used to check for collisions.
 
-    int idealAppleCount = 5;
+    int idealAppleCount = 4;
     int counter = 0;
 
     Random rnd =  new Random();
@@ -56,11 +56,14 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
         RelativeSnake rS = new RelativeSnake();
         snakes.add(rS);
         rS.isAI = false;
+        rS.isThisMe = true;
         rS.reset(new Point((int)(g.tilesX / 2),(int)(g.tilesY / 2)));
         rS.queuedDirection = "Up";
         rS.color = Color.BLUE;
+
         RelativeSnake rSB = new RelativeSnake();
         snakes.add(rSB);
+        rSB.isAI = true;
         rSB.reset(new Point(5,5));
         rSB.queuedDirection = "Down";
         rSB.color = Color.RED;
@@ -223,7 +226,7 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
                 appleCount++;
                 counter++;
                 //reducing the number of apples
-                if(counter == 2 || counter == 4 || counter == 8){
+                if(counter == 6 || counter == 7 || counter == 8){
                     idealAppleCount--;
                 }
             }
