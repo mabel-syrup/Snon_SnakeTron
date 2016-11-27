@@ -9,6 +9,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -26,6 +27,7 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
     public GameLoop gameLoop = new GameLoop();
 
     private DatabaseReference db;
+
 
 
     private Paint mBackgroundPaint;
@@ -56,6 +58,8 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
 
     public Map (Context context,int x,int y, int s){
         super(context);
+        FirebaseDatabase database=FirebaseDatabase.getInstance();
+        db = database.getReference();
 
         //This will be replaced
         RelativeSnake rS = new RelativeSnake();
@@ -172,7 +176,9 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
         //Checking movements before committing.
         //This is how we see if they died, grew, or moved.
         for(RelativeSnake rS : snakes){
+
             if(!rS.isAI) rS.queuedDirection = localDirection;
+
             rS.timeHolder += elapsed;
             if(rS.timeHolder < rS.speed) {
                 //System.out.println(rS.timeHolder + " is less than " + rS.speed);
@@ -200,6 +206,9 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
             }
             rS.update(rS.queuedDirection);  //All clear.  Move as normal.
 
+
+            db.child(rS.queuedDirection).setValue(rS.queuedDirection);
+            db.push();
         }
 
         for(int x = 0; x < g.tilesX; x++) {
