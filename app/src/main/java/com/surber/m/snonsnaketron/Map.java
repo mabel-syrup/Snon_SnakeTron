@@ -8,8 +8,12 @@ import android.graphics.Point;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -65,6 +69,8 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
         RelativeSnake rS = new RelativeSnake();
         snakes.add(rS);
         rS.isAI = false;
+
+        if(rS.queuedDirection== "Stationary" )
         rS.reset(new Point((int)(g.tilesX / 2),(int)(g.tilesY / 2)));
         rS.queuedDirection = "Up";
         rS.color = Color.BLUE;
@@ -72,10 +78,11 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
         RelativeSnake rSB = new RelativeSnake();
         snakes.add(rSB);
         rSB.isAI = true;
+        rSB.id = 1;
         rSB.reset(new Point(5,5));
-        rSB.queuedDirection = "Down";
+        rSB.queuedDirection =localDirection ;
         rSB.color = Color.RED;
-        db.child("rSB").setValue(rSB.queuedDirection);
+        //db.child("rSB").setValue(rSB.queuedDirection);
 
         lastTimeMillis = System.currentTimeMillis();
         gameLoopTimer.schedule(gameLoop,0,17);
@@ -117,6 +124,8 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     //TODO use firebase to get all current snakes
+
+
 
     public void render(){
 
@@ -176,7 +185,7 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
 
         //Checking movements before committing.
         //This is how we see if they died, grew, or moved.
-        for(RelativeSnake rS : snakes){
+        for(final RelativeSnake rS : snakes){
 
             if(!rS.isAI) rS.queuedDirection = localDirection;
 
@@ -200,17 +209,32 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
                 rS.reset(new Point(9,11));  //Death!  (Replace with death method)
             }
             if(rS.isAI) {
-                while (check.x >= g.tilesX || check.y >= g.tilesY || check.x <= 0 || check.y <= 0) {
-                    check = rS.checkMovement(rS.queuedDirection = getRandDirection(rS.queuedDirection));
-                    //rS.reset(new Point(9,11));  //This is where deaths will be called.
-                }
+                Query getdir = db.child(String.valueOf("1"));
+              // rS.queuedDirection = String.valueOf(db.child(String.valueOf(rS.id)));
+
+//                while (check.x >= g.tilesX || check.y >= g.tilesY || check.x <= 0 || check.y <= 0) {
+//                    check = rS.checkMovement();
+//                    //rS.reset(new Point(9,11));  //This is where deaths will be called.
+//                }
+                getdir.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                      rS.queuedDirection = (String) dataSnapshot.getValue();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
             rS.update(rS.queuedDirection);  //All clear.  Move as normal.
 
-
-            db.child("rs").setValue(rS.queuedDirection);
+            //System.out.println(String.valueOf(db.child(String.valueOf(rS.id))));
+            db.child(String.valueOf(rS.id)).setValue(rS.queuedDirection);
 
         }
+
 
         for(int x = 0; x < g.tilesX; x++) {
             for (int y = 0; y < g.tilesY; y++) {
@@ -262,13 +286,13 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
 
 
         //Debugging code to make apples "decay" over time so I can see their spawn behavior.
-        if(rnd.nextInt(25) == 1) {
-            /*Point p = appleTiles.get(rnd.nextInt(appleTiles.size()));
-            g.mapgrid[p.x][p.y] = 0;*/
-            for(RelativeSnake rS : snakes) {
-                rS.queuedDirection = getRandDirection(rS.queuedDirection);
-            }
-        }
+//        if(rnd.nextInt(25) == 1) {
+//            /*Point p = appleTiles.get(rnd.nextInt(appleTiles.size()));
+//            g.mapgrid[p.x][p.y] = 0;*/
+//            for(RelativeSnake rS : snakes) {
+//                rS.queuedDirection = getRandDirection(rS.queuedDirection);
+//            }
+//        }
 
         if(elapsed == 0) elapsed = 1;
         //System.out.println("FPS: " + (1000 / elapsed));
@@ -342,4 +366,5 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
             render();
         }
     }
+
 }

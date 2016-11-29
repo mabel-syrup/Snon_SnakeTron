@@ -22,7 +22,7 @@ public class RelativeSnake {
     long timeHolder = 0;
     int color = Color.BLACK;
     boolean isAI = true;
-
+    int id = 0;
 
     public Point getCoords(){
         return head;
