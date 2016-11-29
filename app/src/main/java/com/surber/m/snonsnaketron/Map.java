@@ -75,6 +75,7 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
         rSB.reset(new Point(5,5));
         rSB.queuedDirection = "Down";
         rSB.color = Color.RED;
+        db.child("rSB").setValue(rSB.queuedDirection);
 
         lastTimeMillis = System.currentTimeMillis();
         gameLoopTimer.schedule(gameLoop,0,17);
@@ -207,8 +208,8 @@ public class Map extends SurfaceView implements SurfaceHolder.Callback{
             rS.update(rS.queuedDirection);  //All clear.  Move as normal.
 
 
-            db.child(rS.queuedDirection).setValue(rS.queuedDirection);
-            db.push();
+            db.child("rs").setValue(rS.queuedDirection);
+
         }
 
         for(int x = 0; x < g.tilesX; x++) {
